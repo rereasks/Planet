@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Cyraxo — Clinical & Enterprise Hub</title>
+    <meta name="description"
+        content="Get in touch with Cyraxo's solutions engineers. Secure business licensing for hospitals and enterprise partners." />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        .page-hero { padding: 160px 24px 80px; position: relative; overflow: hidden; text-align: center; }
+        .page-hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(26, 39, 68, 0.6) 0%, transparent 70%), linear-gradient(180deg, #0b0d12 0%, #0e1420 50%, #0b0d12 100%); }
+        .hero-grid { position: absolute; inset: 0; opacity: 0.03; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 60px 60px; }
+        .page-hero-content { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+        .page-hero h1 { margin: 16px 0 20px; }
+        .contact-layout { display: grid; grid-template-columns: 1fr 1.6fr; gap: 60px; align-items: start; }
+        .contact-info-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; position: sticky; top: 96px; }
+        .engage-options { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
+        .engage-opt { display: flex; gap: 12px; padding: 14px 16px; border-radius: 10px; background: var(--bg-elevated); border: 1px solid var(--border); align-items: center; cursor: pointer; transition: all var(--transition); }
+        .engage-opt:hover { border-color: var(--border-primary); background: var(--primary-glow); }
+        .engage-opt-radio { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
+        .engage-opt.selected .engage-opt-radio { border-color: var(--primary); background: var(--primary); }
+        .form-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 48px 44px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-divider { height: 1px; background: var(--border); margin: 28px 0; }
+        .solution-checkboxes { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .sol-check { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); transition: all var(--transition); }
+        .sol-check input { display: none; }
+        .sol-check.checked { background: var(--primary-glow); border-color: var(--primary); color: var(--primary); }
+        .offices-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .office-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+        .office-region { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+        .success-msg { display: none; text-align: center; padding: 48px 32px; }
+        @media (max-width: 960px) { .contact-layout { grid-template-columns: 1fr; } .offices-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } .offices-grid { grid-template-columns: 1fr; } }
+    </style>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <!-- EmailJS SDK Initialization -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdhK8ksAAAAAOluO6e9H3XEL_0fnb_7tAGmx4zi"></script>
+    <style>
+        .grecaptcha-badge { visibility: hidden; }
+    </style>
+</head>
+
+<body>
+    <div class="noise-overlay"></div>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">
+                <img src="logo.png" alt="Cyraxo logo" style="height:42px; width:auto;" />
+                <span class="logo-word">Cyrax<span>o</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="services.html?sector=infra">Infrastructure</a>
+                <a href="services.html?sector=health" style="color:var(--primary); font-weight:700;">Healthcare</a>
+                <a href="about.html">About</a>
+                <a href="portal/login.html">Provider Portal</a>
+            </div>
+            <div class="nav-cta"><a href="contact.html" class="btn btn-primary btn-sm">Request Demo</a></div>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="page-hero-bg"></div>
+        <div class="hero-grid"></div>
+        <div class="page-hero-content">
+            <span class="badge badge-primary animate-up">Unified Contact Hub</span>
+            <h1 class="animate-up delay-1">Architecting the Infrastructure<br />of Future Healthcare</h1>
+            <p class="animate-up delay-2" style="color:var(--text-muted);">Institutional registration and technical enterprise inquiries. Our solutions engineers respond within 24 hours.</p>
+        </div>
+    </section>
+
+    <section class="section" style="padding-top: 40px;">
+        <div class="container">
+            <div class="contact-layout">
+                <!-- Engagement Sidebar -->
+                <div data-reveal>
+                    <div class="contact-info-card">
+                        <h3>How can we help?</h3>
+                        <p>Select your objective to accelerate institutional vetting.</p>
+                        <div class="engage-options">
+                            <div class="engage-opt selected" id="opt-registration" onclick="selectOpt('registration', this)">
+                                <div class="engage-opt-radio"></div>
+                                <div><div class="engage-opt-label" style="font-weight:700; color:var(--white);">Institutional Registration</div><div style="font-size: 0.75rem; color:var(--text-muted);">Access clinical PWA business accounts</div></div>
+                            </div>
+                            <div class="engage-opt" id="opt-demo" onclick="selectOpt('demo', this)">
+                                <div class="engage-opt-radio"></div>
+                                <div><div class="engage-opt-label">Technical Demo</div><div style="font-size: 0.75rem; color:var(--text-muted);">Review Cyraxo systems with engineers</div></div>
+                            </div>
+                            <div class="engage-opt" id="opt-quote" onclick="selectOpt('quote', this)">
+                                <div class="engage-opt-radio"></div>
+                                <div><div class="engage-opt-label">Get a Quote</div><div style="font-size: 0.75rem; color:var(--text-muted);">Scoped pricing for your enterprise</div></div>
+                            </div>
+                        </div>
+                        <div style="margin-top:28px; padding-top:28px; border-top: 1px solid var(--border);">
+                            <p style="font-size: 0.85rem; margin-bottom: 20px;"><strong style="color:var(--white);">Call Us:</strong> <a href="tel:+17139090001" style="color:var(--primary);">+1 713 909 0001</a></p>
+                            <p style="font-size: 0.85rem;"><strong style="color:var(--white);">Institutional Auth:</strong> Approved requests are provisioned within 4 hours.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Hub -->
+                <div data-reveal data-reveal-delay="150">
+                    <div class="form-card">
+                        <div id="form-content">
+                            <h3>Project Specifications</h3>
+                            <p>Provide organizational context to accelerate your clinical registration.</p>
+                            <form id="contact-form">
+                                <div class="form-section-label">Institutional Contact</div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>First Name *</label><input type="text" name="first_name" required placeholder="Jane"></div>
+                                    <div class="form-group"><label>Last Name *</label><input type="text" name="last_name" required placeholder="Smith"></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Clinical Email *</label><input type="email" name="email" required placeholder="jane@hospital.org"></div>
+                                    <div class="form-group"><label>Phone Number</label><input type="tel" name="phone" placeholder="+1 713 909 0001"></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Organization *</label><input type="text" name="company" required placeholder="Health System Name"></div>
+                                    <div class="form-group"><label>Institutional Role</label><input type="text" name="role" placeholder="Head of Clinical Ops"></div>
+                                </div>
+
+                                <div class="form-divider"></div>
+                                <div class="form-section-label">Solutions Hub</div>
+                                <div class="solution-checkboxes">
+                                    <label class="sol-check" onclick="this.classList.toggle('checked')"><input type="checkbox" name="sol_health"> Healthcare Apps</label>
+                                    <label class="sol-check" onclick="this.classList.toggle('checked')"><input type="checkbox" name="sol_edge"> Infrastructure Eng.</label>
+                                    <label class="sol-check" onclick="this.classList.toggle('checked')"><input type="checkbox" name="sol_therm"> Heat Reclamation</label>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Organization Type</label>
+                                        <select name="org_type" style="width:100%; padding: 12px; background:#0b0d12; color:white; border:1px solid var(--border); border-radius:8px;">
+                                            <option>Private Practice / Clinic</option>
+                                            <option>Hospital / Health System</option>
+                                            <option>Research Institution</option>
+                                            <option>Enterprise Datacenter</option>
+                                            <option>Government Entity</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Procurement Timeline</label>
+                                        <select name="timeline" style="width:100%; padding: 12px; background:#0b0d12; color:white; border:1px solid var(--border); border-radius:8px;">
+                                            <option>Immediate (0–3 months)</option>
+                                            <option>Near-term (3–6 months)</option>
+                                            <option>Planning phase</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-divider"></div>
+                                <div class="form-section-label">Infrastructure / Sustainability Specs</div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Infrastructure Scale</label><input type="text" name="infra_scale" placeholder="e.g. 50+ NVIDIA H100s or 5,000 sq ft"></div>
+                                    <div class="form-group"><label>Target Metric</label><input type="text" name="target_metric" placeholder="e.g. 1.1 PUE goal / 10Tbps fiber"></div>
+                                </div>
+
+                                <div class="form-group" style="margin-top:20px;">
+                                    <label>Brief Description of Requirement</label>
+                                    <textarea name="message" placeholder="Describe your clinical scale, current challenges, or diagnostic requirements..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" style="width:100%;">Transmit Request →</button>
+                                <p style="font-size: 0.72rem; color: var(--text-faint); margin-top: 12px; text-align: center;">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" style="color: var(--primary);">Privacy Policy</a> and <a href="https://policies.google.com/terms" style="color: var(--primary);">Terms of Service</a> apply.</p>
+                            </form>
+                        </div>
+                        <!-- Success state -->
+                        <div class="success-msg" id="success-msg">
+                            <div style="font-size: 3.5rem; margin-bottom: 24px;">🚀</div>
+                            <h2 style="font-size: 2rem; margin-bottom: 12px; color: var(--success);">Form Submitted!</h2>
+                            <p style="font-size: 1.1rem; color: var(--white); margin-bottom: 24px;">An institutional success engineer has been assigned to your request.</p>
+                            <p style="font-size: 0.95rem; color: var(--text-muted);">Please check your email. A confirmation has been sent from <strong style="color:var(--primary);">aryan@cyraxo.com</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Operations -->
+    <section class="section" style="background: var(--bg-surface); border-top:1px solid var(--border); padding-bottom:100px;">
+        <div class="container">
+            <h2 style="text-align:center; margin-bottom:48px;">Global Operations Grid</h2>
+            <div class="offices-grid">
+                <div class="office-card" data-reveal>
+                    <div class="office-region">Americas — HQ</div>
+                    <h4>Houston, Texas.</h4>
+                    <p>2701 Westheimer Road, 8B<br />Houston, Texas 77098<br />United States</p>
+                </div>
+                <div class="office-card" data-reveal data-reveal-delay="100" style="background: rgba(11, 13, 18, 0.4); border-style: dashed; opacity: 0.4;">
+                    <div class="office-region">Expansion coming soon</div>
+                    <h4>EU / EMEA Hub</h4>
+                    <p>Strategic logistics planning in progress.<br />Expansion Phase 2027.</p>
+                </div>
+                <div class="office-card" data-reveal data-reveal-delay="200">
+                    <div class="office-region">India</div>
+                    <h4>Gujarat, India</h4>
+                    <p>B-201, Indraprasth Greens<br />Satellite, Ahmedabad, 380015<br />India</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>© 2026 Cyraxo Inc. Precise Engineering for the Modern Clinic.</span>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // --- INSTITUTIONAL CONFIGURATION ---
+        const CONFIG = {
+            FIREBASE: {
+                apiKey: "AIzaSyABVsemBvgk-EF7ePZCQCYNJQyQ_7jrmbc",
+                authDomain: "cyraxo.firebaseapp.com",
+                projectId: "cyraxo",
+                storageBucket: "cyraxo.firebasestorage.app",
+                messagingSenderId: "100395032793",
+                appId: "1:100395032793:web:f823341fecd15266d3dec8",
+                measurementId: "G-S0W0YB0J0Q"
+            },
+            EMAILJS: {
+                SERVICE_ID: "YOUR_SERVICE_ID",
+                TEMPLATE_ID: "YOUR_TEMPLATE_ID",
+                PUBLIC_KEY: "YOUR_PUBLIC_KEY"
+            },
+            RECAPTCHA_SITE_KEY: "6LdhK8ksAAAAAOluO6e9H3XEL_0fnb_7tAGmx4zi" // Replace with your actual reCAPTCHA v3 site key
+        };
+
+        const app = initializeApp(CONFIG.FIREBASE);
+        const db = getFirestore(app);
+
+        // --- SECURITY ENGINE: Rate Limiting & Sanitization ---
+        const Security = {
+            THRESHOLD: 5,
+            WINDOW_MS: 15 * 60 * 1000,
+            MAX_PAYLOAD: 5000,
+
+            checkRateLimit: () => {
+                const now = Date.now();
+                let history = JSON.parse(localStorage.getItem('cyrax_leads') || '[]');
+                history = history.filter(t => (now - t) < Security.WINDOW_MS);
+                if (history.length >= Security.THRESHOLD) return { ok: false, wait: Math.round((Security.WINDOW_MS - (now - history[0])) / 60000) };
+                history.push(now);
+                localStorage.setItem('cyrax_leads', JSON.stringify(history));
+                return { ok: true };
+            },
+
+            sanitize: (str) => {
+                if (typeof str !== 'string') return str;
+                // Allowing () and [] for phone numbers and clinical notes, but stripping tags
+                return str.replace(/[<>\\"'/{}]/g, '').trim().substring(0, Security.MAX_PAYLOAD);
+            }
+        };
+
+        window.selectedOpt = 'registration';
+        window.selectOpt = function (type, el) {
+            document.querySelectorAll('.engage-opt').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            window.selectedOpt = type;
+        }
+
+        const form = document.getElementById('contact-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            
+            // 1. Rate Limit Gate
+            const limit = Security.checkRateLimit();
+            if (!limit.ok) {
+                alert(`Institutional Throttle Active: Please wait ${limit.wait} minutes before another submission.`);
+                return;
+            }
+
+            btn.innerText = 'Verifying Security...';
+            btn.disabled = true;
+
+            try {
+                // 2. reCAPTCHA v3 Token Generation
+                let recaptchaToken = null;
+                if (CONFIG.RECAPTCHA_SITE_KEY !== "6LcNf7MaAAAAAFX_XXXXXXXXXXXXXXX") {
+                    recaptchaToken = await new Promise((resolve, reject) => {
+                        grecaptcha.ready(() => {
+                            grecaptcha.execute(CONFIG.RECAPTCHA_SITE_KEY, { action: 'submit_contact' })
+                                .then(resolve)
+                                .catch(reject);
+                        });
+                    });
+                } else {
+                    console.warn("reCAPTCHA Site Key not configured. Skipping verification.");
+                }
+
+                btn.innerText = 'Transmitting...';
+                
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                // 3. Sanitization Gate
+                for (let key in data) {
+                    data[key] = Security.sanitize(data[key]);
+                    if (data[key].length > Security.MAX_PAYLOAD) throw new Error("Payload Overflow Detected.");
+                }
+
+                data.engagement_type = window.selectedOpt;
+                data.submittedAt = new Date().toISOString();
+                data.status = 'Pending Verification';
+                data.recaptcha_token = recaptchaToken; // Store token for backend verification if available
+
+                // 4. Firestore Node Delivery
+                const targetColl = (window.selectedOpt === 'registration') ? 'registration_requests' : 'contacts';
+                await addDoc(collection(db, targetColl), data);
+
+                // 5. Auto-Responder Node (EmailJS)
+                if (CONFIG.EMAILJS.SERVICE_ID !== "YOUR_SERVICE_ID") {
+                    try {
+                        emailjs.init(CONFIG.EMAILJS.PUBLIC_KEY);
+                        await emailjs.send(CONFIG.EMAILJS.SERVICE_ID, CONFIG.EMAILJS.TEMPLATE_ID, {
+                            user_name: data.first_name,
+                            user_email: data.email,
+                            business_name: data.company,
+                            from_name: "Aryan Atri",
+                            reply_to: "aryan@cyraxo.com",
+                            message: "Thank you for reaching out! We have received your request and will get back to you shortly."
+                        });
+                    } catch (mErr) { console.error("Mail Relay Failure", mErr); }
+                }
+
+                // 6. Visual Success Node
+                document.getElementById('form-content').style.display = 'none';
+                document.getElementById('success-msg').style.display = 'block';
+            } catch (error) {
+                console.error(error);
+                alert("Submission Blocked: Malformed data or security verification failure.");
+                btn.innerText = 'Transmit Request →';
+                btn.disabled = false;
+            }
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('subject') === 'Institutional Registration') {
+            document.getElementById('opt-registration').click();
+        }
+    </script>
+</body>
+</html>

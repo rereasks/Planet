@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyraxHealth — Clinical Business Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google reCAPTCHA v3 -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdhK8ksAAAAAOluO6e9H3XEL_0fnb_7tAGmx4zi"></script>
+    <style>
+        .grecaptcha-badge { visibility: hidden; }
+    </style>
+</head>
+<body class="auth-page">
+    <div class="noise-overlay"></div>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="logo">CyraxHealth <span>Admin</span></div>
+            <h1 id="auth-title">Business Login</h1>
+            <p id="auth-desc">Secure access for institutional partners only.</p>
+            
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Clinic Email</label>
+                    <input type="email" id="email" required placeholder="clinician@cyrax.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <div id="auth-error" class="error-msg"></div>
+                <button type="submit" id="submit-btn" class="btn btn-primary btn-block">Authorize Node</button>
+                <p style="font-size: 0.65rem; color: var(--text-faint); margin-top: 14px; text-align: center; opacity: 0.6;">Protected by reCAPTCHA. <a href="https://policies.google.com/privacy" style="color: var(--primary);">Privacy</a> & <a href="https://policies.google.com/terms" style="color: var(--primary);">Terms</a> apply.</p>
+            </form>
+            
+            <div class="auth-footer">
+                Account required for institutional access. <br>
+                <a href="../contact.html?subject=Institutional%20Registration" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-top: 12px; display: inline-block;">Request Clinic Credentials →</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
+
+        // --- SECURITY ENGINE: Auth Throttling & reCAPTCHA ---
+        const Security = {
+            THRESHOLD: 5,
+            WINDOW_MS: 15 * 60 * 1000,
+            RECAPTCHA_SITE_KEY: "6LdhK8ksAAAAAOluO6e9H3XEL_0fnb_7tAGmx4zi", // Replace with actual site key
+            
+            checkAuthGuard: () => {
+                const now = Date.now();
+                let history = JSON.parse(localStorage.getItem('cyrax_auth_attempts') || '[]');
+                history = history.filter(t => (now - t) < Security.WINDOW_MS);
+                if (history.length >= Security.THRESHOLD) return { ok: false, wait: Math.round((Security.WINDOW_MS - (now - history[0])) / 60000) };
+                return { ok: true, history };
+            },
+            
+            recordAttempt: (history) => {
+                history.push(Date.now());
+                localStorage.setItem('cyrax_auth_attempts', JSON.stringify(history));
+            },
+
+            getRecaptchaToken: async () => {
+                if (Security.RECAPTCHA_SITE_KEY === "6LcNf7MaAAAAAFX_XXXXXXXXXXXXXXX") return null;
+                return new Promise((resolve, reject) => {
+                    grecaptcha.ready(() => {
+                        grecaptcha.execute(Security.RECAPTCHA_SITE_KEY, { action: 'login' })
+                            .then(resolve)
+                            .catch(reject);
+                    });
+                });
+            }
+        };
+
+        // Check if already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('auth-error');
+            const btn = document.getElementById('submit-btn');
+            
+            errorDiv.textContent = '';
+            
+            // 1. Auth Guard Gate
+            const guard = Security.checkAuthGuard();
+            if (!guard.ok) {
+                errorDiv.textContent = `Institutional Lockout: Please wait ${guard.wait} minutes.`;
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Verifying Security...';
+            
+            try {
+                // 2. reCAPTCHA Verification
+                const token = await Security.getRecaptchaToken();
+                // In a production environment, you would send this token to your backend
+                // or verify it via a Firebase Callable Function before proceeding.
+                if (token) console.log("reCAPTCHA Verified");
+
+                btn.textContent = 'Authorizing Node...';
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                Security.recordAttempt(guard.history);
+                errorDiv.textContent = 'Access Denied: Invalid institutional credentials.';
+                console.error("Auth Fail:", err.code);
+                btn.textContent = 'Authorize Node';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
