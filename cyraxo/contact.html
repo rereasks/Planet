@@ -38,9 +38,9 @@
     <link rel="icon" type="image/png" href="logo.png" />
     <!-- EmailJS SDK Initialization -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js?render=6LdhK8ksAAAAAOluO6e9H3XEL_0fnb_7tAGmx4zi"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
-        .grecaptcha-badge { visibility: hidden; }
+        .g-recaptcha { margin: 20px 0; display: flex; justify-content: center; }
     </style>
 </head>
 
@@ -152,17 +152,11 @@
                                     </div>
                                 </div>
 
-                                <div class="form-divider"></div>
-                                <div class="form-section-label">Infrastructure / Sustainability Specs</div>
-                                <div class="form-row">
-                                    <div class="form-group"><label>Infrastructure Scale</label><input type="text" name="infra_scale" placeholder="e.g. 50+ NVIDIA H100s or 5,000 sq ft"></div>
-                                    <div class="form-group"><label>Target Metric</label><input type="text" name="target_metric" placeholder="e.g. 1.1 PUE goal / 10Tbps fiber"></div>
-                                </div>
-
                                 <div class="form-group" style="margin-top:20px;">
                                     <label>Brief Description of Requirement</label>
                                     <textarea name="message" placeholder="Describe your clinical scale, current challenges, or diagnostic requirements..."></textarea>
                                 </div>
+                                <div class="g-recaptcha" data-sitekey="6LdGNMksAAAAAGbZMblAbU3HD2oeVWpvrYqaSpQt" data-theme="dark"></div>
                                 <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" style="width:100%;">Transmit Request →</button>
                                 <p style="font-size: 0.72rem; color: var(--text-faint); margin-top: 12px; text-align: center;">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" style="color: var(--primary);">Privacy Policy</a> and <a href="https://policies.google.com/terms" style="color: var(--primary);">Terms of Service</a> apply.</p>
                             </form>
@@ -230,7 +224,7 @@
                 TEMPLATE_ID: "YOUR_TEMPLATE_ID",
                 PUBLIC_KEY: "YOUR_PUBLIC_KEY"
             },
-            RECAPTCHA_SITE_KEY: "6LdhK8ksAAAAAOluO6e9H3XEL_0fnb_7tAGmx4zi" // Replace with your actual reCAPTCHA v3 site key
+            RECAPTCHA_SITE_KEY: "6LdGNMksAAAAAGbZMblAbU3HD2oeVWpvrYqaSpQt" // reCAPTCHA v2 Site Key
         };
 
         const app = initializeApp(CONFIG.FIREBASE);
@@ -282,18 +276,13 @@
             btn.disabled = true;
 
             try {
-                // 2. reCAPTCHA v3 Token Generation
-                let recaptchaToken = null;
-                if (CONFIG.RECAPTCHA_SITE_KEY !== "6LcNf7MaAAAAAFX_XXXXXXXXXXXXXXX") {
-                    recaptchaToken = await new Promise((resolve, reject) => {
-                        grecaptcha.ready(() => {
-                            grecaptcha.execute(CONFIG.RECAPTCHA_SITE_KEY, { action: 'submit_contact' })
-                                .then(resolve)
-                                .catch(reject);
-                        });
-                    });
-                } else {
-                    console.warn("reCAPTCHA Site Key not configured. Skipping verification.");
+                // 2. reCAPTCHA v2 Verification
+                const recaptchaToken = grecaptcha.getResponse();
+                if (!recaptchaToken) {
+                    alert("Please complete the reCAPTCHA verification.");
+                    btn.innerText = 'Transmit Request →';
+                    btn.disabled = false;
+                    return;
                 }
 
                 btn.innerText = 'Transmitting...';

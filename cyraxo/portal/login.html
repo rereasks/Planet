@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyraxHealth — Clinical Business Portal</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google reCAPTCHA v3 -->
-    <script src="https://www.google.com/recaptcha/api.js?render=6LdhK8ksAAAAAOluO6e9H3XEL_0fnb_7tAGmx4zi"></script>
+    <!-- Google reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
-        .grecaptcha-badge { visibility: hidden; }
+        .g-recaptcha { margin: 15px 0; display: flex; justify-content: center; }
     </style>
 </head>
 <body class="auth-page">
@@ -29,6 +29,7 @@
                     <input type="password" id="password" required placeholder="••••••••">
                 </div>
                 <div id="auth-error" class="error-msg"></div>
+                <div class="g-recaptcha" data-sitekey="6LdGNMksAAAAAGbZMblAbU3HD2oeVWpvrYqaSpQt"></div>
                 <button type="submit" id="submit-btn" class="btn btn-primary btn-block">Authorize Node</button>
                 <p style="font-size: 0.65rem; color: var(--text-faint); margin-top: 14px; text-align: center; opacity: 0.6;">Protected by reCAPTCHA. <a href="https://policies.google.com/privacy" style="color: var(--primary);">Privacy</a> & <a href="https://policies.google.com/terms" style="color: var(--primary);">Terms</a> apply.</p>
             </form>
@@ -47,7 +48,6 @@
         const Security = {
             THRESHOLD: 5,
             WINDOW_MS: 15 * 60 * 1000,
-            RECAPTCHA_SITE_KEY: "6LdhK8ksAAAAAOluO6e9H3XEL_0fnb_7tAGmx4zi", // Replace with actual site key
             
             checkAuthGuard: () => {
                 const now = Date.now();
@@ -60,17 +60,6 @@
             recordAttempt: (history) => {
                 history.push(Date.now());
                 localStorage.setItem('cyrax_auth_attempts', JSON.stringify(history));
-            },
-
-            getRecaptchaToken: async () => {
-                if (Security.RECAPTCHA_SITE_KEY === "6LcNf7MaAAAAAFX_XXXXXXXXXXXXXXX") return null;
-                return new Promise((resolve, reject) => {
-                    grecaptcha.ready(() => {
-                        grecaptcha.execute(Security.RECAPTCHA_SITE_KEY, { action: 'login' })
-                            .then(resolve)
-                            .catch(reject);
-                    });
-                });
             }
         };
 
@@ -97,16 +86,17 @@
                 return;
             }
 
+            // 2. reCAPTCHA v2 Verification
+            const recaptchaToken = grecaptcha.getResponse();
+            if (!recaptchaToken) {
+                errorDiv.textContent = 'Please complete the security verification.';
+                return;
+            }
+
             btn.disabled = true;
             btn.textContent = 'Verifying Security...';
             
             try {
-                // 2. reCAPTCHA Verification
-                const token = await Security.getRecaptchaToken();
-                // In a production environment, you would send this token to your backend
-                // or verify it via a Firebase Callable Function before proceeding.
-                if (token) console.log("reCAPTCHA Verified");
-
                 btn.textContent = 'Authorizing Node...';
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (err) {
@@ -115,6 +105,7 @@
                 console.error("Auth Fail:", err.code);
                 btn.textContent = 'Authorize Node';
                 btn.disabled = false;
+                grecaptcha.reset();
             }
         });
     </script>
