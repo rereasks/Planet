@@ -38,9 +38,19 @@
     <link rel="icon" type="image/png" href="logo.png" />
     <!-- EmailJS SDK Initialization -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script type="text/javascript">
+        window.onloadCallback = function() {
+            if (window.grecaptcha) {
+                window.recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+                    'sitekey': '6LdGNMksAAAAAGbZMblAbU3HD2oeVWpvrYqaSpQt',
+                    'theme': 'dark'
+                });
+            }
+        };
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
     <style>
-        .g-recaptcha { margin: 20px 0; display: flex; justify-content: center; }
+        .g-recaptcha { margin: 20px 0; display: flex; justify-content: center; min-height: 78px; }
     </style>
 </head>
 
@@ -156,7 +166,7 @@
                                     <label>Brief Description of Requirement</label>
                                     <textarea name="message" placeholder="Describe your clinical scale, current challenges, or diagnostic requirements..."></textarea>
                                 </div>
-                                <div class="g-recaptcha" data-sitekey="6LdGNMksAAAAAGbZMblAbU3HD2oeVWpvrYqaSpQt" data-theme="dark"></div>
+                                <div id="recaptcha-container" class="g-recaptcha"></div>
                                 <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" style="width:100%;">Transmit Request →</button>
                                 <p style="font-size: 0.72rem; color: var(--text-faint); margin-top: 12px; text-align: center;">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" style="color: var(--primary);">Privacy Policy</a> and <a href="https://policies.google.com/terms" style="color: var(--primary);">Terms of Service</a> apply.</p>
                             </form>
@@ -277,7 +287,10 @@
 
             try {
                 // 2. reCAPTCHA v2 Verification
-                const recaptchaToken = grecaptcha.getResponse();
+                if (!window.grecaptcha) {
+                    throw new Error("Security Engine Offline: reCAPTCHA script not loaded.");
+                }
+                const recaptchaToken = grecaptcha.getResponse(window.recaptchaWidgetId);
                 if (!recaptchaToken) {
                     alert("Please complete the reCAPTCHA verification.");
                     btn.innerText = 'Transmit Request →';
@@ -288,18 +301,22 @@
                 btn.innerText = 'Transmitting...';
                 
                 const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
+                const data = {};
                 
-                // 3. Sanitization Gate
-                for (let key in data) {
-                    data[key] = Security.sanitize(data[key]);
-                    if (data[key].length > Security.MAX_PAYLOAD) throw new Error("Payload Overflow Detected.");
-                }
+                // Capture all fields, ensuring checkboxes are booleans
+                formData.forEach((value, key) => {
+                    data[key] = Security.sanitize(value);
+                });
+
+                // Specifically handle checkboxes that might be missing if unchecked
+                ['sol_health', 'sol_edge', 'sol_therm'].forEach(key => {
+                    data[key] = form.elements[key] ? form.elements[key].checked : false;
+                });
 
                 data.engagement_type = window.selectedOpt;
                 data.submittedAt = new Date().toISOString();
                 data.status = 'Pending Verification';
-                data.recaptcha_token = recaptchaToken; // Store token for backend verification if available
+                data.recaptcha_token = recaptchaToken; 
 
                 // 4. Firestore Node Delivery
                 const targetColl = (window.selectedOpt === 'registration') ? 'registration_requests' : 'contacts';
@@ -324,8 +341,8 @@
                 document.getElementById('form-content').style.display = 'none';
                 document.getElementById('success-msg').style.display = 'block';
             } catch (error) {
-                console.error(error);
-                alert("Submission Blocked: Malformed data or security verification failure.");
+                console.error("Submission Error:", error);
+                alert(`Submission Blocked: ${error.message || "Malformed data or security verification failure."}`);
                 btn.innerText = 'Transmit Request →';
                 btn.disabled = false;
             }
@@ -336,5 +353,6 @@
             document.getElementById('opt-registration').click();
         }
     </script>
+<script src="script.js"></script>
 </body>
 </html>
